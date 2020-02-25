@@ -1,0 +1,22 @@
+<view class="container">
+    <view class="bag-wrap">
+        <view class="product-wrap">
+            <view class="empty-info" wx:if="{{empty}}">赏袋空空如也，快去买赏吧！</view>
+            <block wx:else>
+                <view class="product-item" wx:for="{{bagList}}" wx:key="_id">
+                    <view class="product-img-wrap">
+                        <image bind:tap="previewProduct" class="product-img" data-url="{{item.productImg}}" mode="widthFix" src="{{item.productImg}}"></image>
+                        <view class="product-name">{{item.name}}</view>
+                    </view>
+                    <view class="detail-wrap">
+                        
+                    </view>
+                </view>
+                <view class="product-item-holder"></view>
+            </block>
+        </view>
+        <view class="btn-wrap">
+            
+        </view>
+    </view>
+</view>

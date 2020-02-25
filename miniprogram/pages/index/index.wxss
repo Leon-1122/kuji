@@ -1,0 +1,40 @@
+page {
+    background-color: #000000;
+}
+
+.main-wrapper {
+    margin: 0 0 20rpx 0;
+    padding: 20rpx 40rpx;
+    font-size: 0;
+}
+
+.info-wrap {
+    font-size: 40rpx;
+    font-weight: bold;
+    margin: 0 0 20rpx 0;
+}
+
+.name {
+    margin: 0 0 0 20rpx;
+    font-size: 30rpx;
+}
+
+.sold-out {
+    color: #E70012;
+    font-size: 24rpx;
+}
+
+.coming-soon {
+    color: #007fff;
+    font-size: 24rpx;
+}
+
+.main-wrapper image {
+    margin: 0 0 10rpx 0;
+    width: 100%;
+    border-radius: 10rpx;
+}
+
+.main-img-wrap image:last-child {
+    margin: 0;
+}

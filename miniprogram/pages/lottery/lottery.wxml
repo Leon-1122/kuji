@@ -1,0 +1,129 @@
+<view class="container">
+    <view class="main-wrap">
+        <image class="window-bg" mode="widthFix" src="/icon/window_bg.png"></image>
+        <image class="top-img" mode="widthFix" src="{{topImg}}"></image>
+        <view bind:tap="previewTopImg" class="tap-layer"></view>
+        <image bind:tap="onSwiperLeft" class="icon-left" mode="widthFix" src="/icon/icon_left.png"></image>
+        <image bind:tap="onSwiperRight" class="icon-right" mode="widthFix" src="/icon/icon_right.png"></image>
+        <image bind:tap="onSwiperRight" class="icon-change" mode="widthFix" src="/icon/icon_change.png"></image>
+        <view class="project-count">
+            <view>当前：第 <text>{{projectOrder}}</text> 套</view>
+            <view>总套数：<text>{{projectLength}}</text> 套</view>
+        </view>
+    </view>
+    <view class="card-wrap">
+        <image class="card-bg" mode="widthFix" src="/icon/card_bg.png"></image>
+        <image class="card-img" mode="widthFix" src="/icon/card.png"></image>
+        <image class="card-text" mode="widthFix" src="/icon/card_text.png"></image>
+        <view class="cost-count">(50元/张)</view>
+        <view class="card-count">剩余数量：<text>{{cardRemain}}</text>/{{cardTotal}}</view>
+    </view>
+    <view class="tab-wrap">
+        <image bind:tap="onTabChange" class="icon-tab" mode="widthFix" src="{{tabListActive?'/icon/btn_list_active.png':'/icon/btn_list_common.png'}}"></image>
+        <image bind:tap="onTabChange" class="icon-tab" mode="widthFix" src="{{tabListActive?'/icon/btn_record_common.png':'/icon/btn_record_active.png'}}"></image>
+    </view>
+    <view class="info-wrap">
+        <view class="product-wrap" wx:if="{{tabListActive}}">
+            <view class="product-item" wx:for="{{productPreview}}" wx:key="_id">
+                <view class="product-img-wrap">
+                    <image bind:tap="previewProduct" class="product-img" data-url="{{item.productImg}}" mode="widthFix" src="{{item.productImg}}"></image>
+                    <view class="product-name">{{item.name}}</view>
+                </view>
+            </view>
+            <view class="product-item-holder"></view>
+        </view>
+        <view class="record-wrap" wx:else>
+            <view class="record-title-line">
+                <view>赠品类别</view>
+                <view>剩余/总数</view>
+            </view>
+            <view class="record-line" wx:for="{{remainShow}}" wx:key="_unique">
+                <view>{{item.level}}赏：</view>
+                <view>{{item.remain}}/{{item.total||0}}</view>
+            </view>
+        </view>
+        <image class="flower-bg" mode="widthFix" src="/icon/flower_all_bg.png"></image>
+    </view>
+    <view bind:tap="closePayModal" class="pay-modal" wx:if="{{payModalShow}}">
+        <view class="pay-modal-wrap">
+            <image class="pay-bg" mode="widthFix" src="/icon/pay_bg.png"></image>
+            <view class="pay-title-wrap">
+                <view class="pay-text">购买 {{cardPayCount}} 张明信片</view>
+                <view class="pay-subtext">总计￥ {{cardPayTotal}}元</view>
+            </view>
+            <view class="pay-method-wrap">
+                <view catch:tap="moneyBagPay" class="pay-flex-wrap">
+                    <image class="icon-pay" mode="widthFix" src="/icon/icon_moneybag.png"></image>
+                    <view class="pay-choose-block">钱袋余额支付(￥ {{moneyBagRemain}}元)</view>
+                </view>
+                <view catch:tap="wechatPay" class="pay-flex-wrap">
+                    <image class="icon-pay" mode="widthFix" src="/icon/icon_wechat.png"></image>
+                    <view class="pay-choose-block">微信支付</view>
+                </view>
+                <view class="pay-info">
+                    <view>(微信支付购买时，如遇到赠品数量不足的情况，相应金额会存放入钱袋，下次购买可以直接选择使用钱袋支付)</view>
+                </view>
+            </view>
+        </view>
+    </view>
+    <view class="draw-wrap">
+        <button bindgetuserinfo="onGetUserInfo" class="login-btn" data-count="1" openType="getUserInfo">
+            <image class="icon-draw" mode="widthFix" src="/icon/icon_draw_one.png" wx:if="{{cardRemain>0}}"></image>
+            <image class="icon-draw" mode="widthFix" src="/icon/icon_draw_one_no.png" wx:else></image>
+        </button>
+        <button bindgetuserinfo="onGetUserInfo" class="login-btn" data-count="3" openType="getUserInfo">
+            <image class="icon-draw" mode="widthFix" src="/icon/icon_draw_three.png" wx:if="{{cardRemain>2}}"></image>
+            <image class="icon-draw" mode="widthFix" src="/icon/icon_draw_three_no.png" wx:else></image>
+        </button>
+        <button bindgetuserinfo="onGetUserInfo" class="login-btn" data-count="5" openType="getUserInfo">
+            <image class="icon-draw" mode="widthFix" src="/icon/icon_draw_five.png" wx:if="{{cardRemain>4}}"></image>
+            <image class="icon-draw" mode="widthFix" src="/icon/icon_draw_five_no.png" wx:else></image>
+        </button>
+    </view>
+    <scroll-view scrollY catchtouchmove="true" class="lottery-wrap" wx:if="{{lotteryPop}}">
+        <view class="step-one" wx:if="{{stepOne}}">
+            <view class="step-title">感谢购买</view>
+            <image class="step-card-img" mode="widthFix" src="/icon/card.png"></image>
+            <view class="step-text">明信片x{{drawCount}}</view>
+            <view class="step-title">附送</view>
+            <view class="ticket-wrap">
+                <view class="{{lastProduct?'ticket-margin':''}}">
+                    <image class="ticket-img" mode="widthFix" src="/icon/ticket.png"></image>
+                    <view class="step-text">赠品交换券x{{drawCount}}</view>
+                </view>
+                <view class="product-img-wrap last-margin" wx:if="{{lastProduct}}">
+                    <image bind:tap="previewLastProduct" class="product-img" data-url="{{lastProduct.productImg}}" mode="widthFix" src="{{lastProduct.productImg}}"></image>
+                    <view class="product-name">{{lastProduct.name}}</view>
+                </view>
+            </view>
+            <view bind:tap="changeStep" class="step-btn">撕开交换券</view>
+        </view>
+        <view class="step-two" wx:else>
+            <view class="step-title">恭喜获得</view>
+            <view class="draw-product-img-wrap">
+                <view class="product-img-wrap" wx:for="{{productDrawed}}" wx:key="index">
+                    <image bind:tap="previewDrawProduct" class="product-img" data-url="{{item.productImg}}" mode="widthFix" src="{{item.productImg}}"></image>
+                    <view class="product-name">{{item.name}}</view>
+                </view>
+            </view>
+            <view class="step-text">赠品已放入赏袋</view>
+            <view bind:tap="lotteryClose" class="step-btn">继续</view>
+        </view>
+    </scroll-view>
+    <image bind:tap="showBuyInfo" class="icon-buy-info" src="/icon/icon_buy_info.png"></image>
+    <image bind:tap="goBag" class="icon-go-bag" src="/icon/icon_go_bag.png"></image>
+    <image bind:tap="tapRefresh" class="icon-refresh" src="/icon/icon_refresh.png"></image>
+    <view class="info-modal" wx:if="{{modalShow}}">
+        <view class="info-modal-wrap">
+            <image class="info-modal-bg" mode="widthFix" src="/icon/info_bg.png"></image>
+            <view class="info-modal-title">购 买 说 明</view>
+            <view class="info-modal-content">
+                <view>1、根据需求点击“买一张”或“买三张”或“买五张”购买按钮，获得明信片和赠品交换券（每购买一张明信片都会随机获得一张赠品交换券，100%有赠品，赠品类型以交换券显示内容为准）。</view>
+                <view>2、点击“确认支付”，支付对应款项，等待明信片和赠品交换券弹出。</view>
+                <view>3、点击“撕开交换券”，查看本次获得赠品详情。</view>
+                <view>4、点击“赏袋”按钮，查看全部已获得的商品。</view>
+            </view>
+            <image bind:tap="closeModal" class="icon-close-btn" mode="widthFix" src="/icon/icon_close_btn.png"></image>
+        </view>
+    </view>
+</view>

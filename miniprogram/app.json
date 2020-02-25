@@ -1,0 +1,42 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/bag/bag",
+    "pages/user/user",
+    "pages/lottery/lottery"
+  ],
+  "window": {
+    "backgroundColor": "#000000",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#000000",
+    "navigationBarTitleText": "一番赏",
+    "navigationBarTextStyle": "white"
+  },
+  "tabBar": {
+    "color": "#777777",
+    "backgroundColor": "#000000",
+    "selectedColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "买赏",
+        "iconPath": "icon/index_common.png",
+        "selectedIconPath": "icon/index_active.png"
+      },
+      {
+        "pagePath": "pages/bag/bag",
+        "text": "赏袋",
+        "iconPath": "icon/bag_common.png",
+        "selectedIconPath": "icon/bag_active.png"
+      },
+      {
+        "pagePath": "pages/user/user",
+        "text": "个人",
+        "iconPath": "icon/user_common.png",
+        "selectedIconPath": "icon/user_active.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json"
+}

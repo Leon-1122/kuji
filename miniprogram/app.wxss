@@ -1,0 +1,19 @@
+page {
+    color: #ffffff;
+}
+
+button {
+    background: initial;
+}
+
+button:focus {
+    outline: 0;
+}
+
+button::after {
+    border: none;
+}
+
+.button-hover {
+    background-color: transparent!important;
+}

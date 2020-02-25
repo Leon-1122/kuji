@@ -1,0 +1,85 @@
+page {
+    background-color: #000000;
+}
+
+.info-wrap {
+    margin: 0 0 100rpx 0!important;
+    padding: 30rpx;
+    text-align: center;
+    width: 100%!important;
+}
+
+.avatar-wrap {
+    margin: 0 0 10rpx 0;
+    text-align: center;
+    font-size: 0;
+}
+
+.avatar {
+    width: 150rpx;
+    height: 150rpx;
+    border-radius: 50%;
+}
+
+.nick-name {
+    color: #ffffff;
+    font-size: 46rpx;
+    font-weight: bold;
+}
+
+.border-nick-name {
+    margin: 0 auto;
+    width: 200rpx;
+    border: 2rpx solid #ffffff;
+    border-radius: 8rpx;
+}
+
+.detail-wrapper {
+    padding: 0 100rpx;
+}
+
+.cell {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 20rpx 0;
+    padding: 10rpx 0;
+    border-bottom: 2rpx dashed #cccccc;
+    font-size: 30rpx;
+}
+
+.opensetting-btn {
+    color: #ffffff;
+    margin: 0!important;
+    padding: 0!important;
+    font-size: 30rpx!important;
+    line-height: normal!important;
+    width: auto!important;
+    min-height: 2rpx!important;
+}
+
+.service-btn {
+    position: absolute;
+    bottom: 250rpx;
+    left: 50%;
+    width: 360rpx;
+    margin: 0 0 0 -180rpx!important;
+    background-color: #E70012!important;
+    color: #ffffff!important;
+    font-weight: bold;
+}
+
+.vechain-wrapper {
+    position: absolute;
+    bottom: 80rpx;
+    left: 50%;
+    width: 360rpx;
+    margin: 0 0 0 -180rpx;
+    text-align: center;
+    font-size: 24rpx;
+}
+
+.vechain-logo {
+    width: 266rpx;
+    height: 38rpx;
+}

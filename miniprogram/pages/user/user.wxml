@@ -1,0 +1,30 @@
+<view class="container">
+    <button bindgetuserinfo="onGetUserInfo" class="info-wrap" openType="getUserInfo">
+        <view class="avatar-wrap">
+            <image class="avatar" src="{{userInfo.avatarUrl}}"></image>
+        </view>
+        <view class="nick-name" wx:if="{{userInfo.nickName}}">{{userInfo.nickName}}</view>
+        <view class="nick-name border-nick-name" wx:else>点击登录</view>
+    </button>
+    <view class="detail-wrapper">
+        <view class="cell">
+            <view>钱袋：</view>
+            <view>￥ {{userInfo.moneyBag||0}}元</view>
+        </view>
+        <!--
+        <view class="cell">
+            <view>收货地址：</view>
+            <view bind:tap="onAddressManage" wx:if="{{userInfo.address}}">
+        已绑定微信地址
+      </view>
+            <view bind:tap="onAddressManage" wx:if="{{!userInfo.address&&!showOpenSettingBtn}}">
+        未填写
+      </view>
+            <button bindopensetting="openSetting" class="opensetting-btn" openType="openSetting" wx:if="{{showOpenSettingBtn}}">
+        授权微信地址
+      </button>
+        </view>
+         -->
+    </view>
+    <button class="service-btn" openType="contact" type="default">客服</button>
+</view>
