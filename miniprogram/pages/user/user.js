@@ -23,8 +23,8 @@ Page({
     onGetUserInfo: function(o) {
         var s = this;
         if (!n) {
-            var a = o.detail.userInfo, c = wx.getStorageSync("inviteCode");
-            c && (a.inviteCode = c), a.moneyBag = 0, a.bagList = [], a.createTime = t.serverDate(), 
+            var a = o.detail.userInfo;
+            a.moneyBag = 0, a.bagList = [], a.createTime = t.serverDate(), 
             e.add({
                 data: a
             }).then(function(t) {

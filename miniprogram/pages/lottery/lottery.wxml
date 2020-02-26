@@ -15,7 +15,7 @@
         <image class="card-bg" mode="widthFix" src="/icon/card_bg.png"></image>
         <image class="card-img" mode="widthFix" src="/icon/card.png"></image>
         <image class="card-text" mode="widthFix" src="/icon/card_text.png"></image>
-        <view class="cost-count">(50元/张)</view>
+        <view class="cost-count">({{price}}元/张)</view>
         <view class="card-count">剩余数量：<text>{{cardRemain}}</text>/{{cardTotal}}</view>
     </view>
     <view class="tab-wrap">

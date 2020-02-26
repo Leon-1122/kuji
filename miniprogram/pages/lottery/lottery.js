@@ -7,7 +7,9 @@ var t = wx.cloud.database(),
     o = "",
     r = !1,
     i = "",
-    c = 0;
+    c = 0,
+    price = 0,
+    machineCode = wx.getStorageSync("machineCode");
 
 Page({
     data: {
@@ -16,6 +18,7 @@ Page({
         projectLength: 0,
         cardRemain: 0,
         cardTotal: 0,
+        price: 0,
         tabListActive: !0,
         productPreview: [],
         remainShow: [],
@@ -42,7 +45,9 @@ Page({
     },
     getData: function(a, e) {
         var n = this;
-        t.collection(a).orderBy("order", "asc").get().then(function(t) {
+        t.collection(a).where({
+            machineCode: machineCode
+        }).orderBy("order", "asc").get().then(function(t) {
             var a = !0;
             if (t.data.map(function(t) {
                     t.cardRemain > 0 && (a = !1);
@@ -67,7 +72,7 @@ Page({
                                         l = d.topImg,
                                         u = d.productPreview,
                                         h = d.productList;
-                                    r = c, i = a;
+                                    r = c, i = a, price = d.price;
                                     var w = [];
                                     return u.map(function(t, a) {
                                         w[a] = {
@@ -82,7 +87,8 @@ Page({
                                         productPreview: u,
                                         remainShow: w,
                                         projectOrder: o,
-                                        projectLength: t.data.length
+                                        projectLength: t.data.length,
+                                        price: price
                                     }, e && e()), "break";
                                 }()) break;
                     }
@@ -118,7 +124,7 @@ Page({
                 u = n.topImg,
                 d = n.productPreview,
                 h = n.productList;
-            r = s, i = o;
+            r = s, i = o, price = n.price;
             var w = [];
             d.map(function(t, a) {
                 w[a] = {
@@ -134,7 +140,8 @@ Page({
                 remainShow: w,
                 projectOrder: c,
                 lotteryPop: !1,
-                stepOne: !0
+                stepOne: !0,
+                price: price
             }, a && a());
         });
     },
@@ -167,6 +174,7 @@ Page({
         wx.showLoading({
             title: "加载中"
         }), t.collection(n).where({
+            machineCode: machineCode, 
             order: a
         }).get().then(function(t) {
             var a = t.data[0],
@@ -174,6 +182,7 @@ Page({
                 o = a.order,
                 c = a.openStatus,
                 s = a.cardRemain,
+                y = a.cardTotal,
                 l = a.topImg,
                 u = a.productPreview,
                 d = a.productList;
@@ -187,7 +196,7 @@ Page({
                 });
             }), e.setData({
                 cardRemain: s,
-                cardTotal: d.length - 1,
+                cardTotal: y,
                 topImg: l,
                 productPreview: u,
                 remainShow: h,
@@ -238,9 +247,8 @@ Page({
                 icon: "none"
             });
         } else {
-            var i = n.detail.userInfo,
-                c = wx.getStorageSync("inviteCode");
-            c && (i.inviteCode = c), i.moneyBag = 0, i.bagList = [], i.createTime = t.serverDate(),
+            var i = n.detail.userInfo;
+            i.moneyBag = 0, i.bagList = [], i.createTime = t.serverDate(),
                 a.add({
                     data: i
                 }).then(function(t) {
@@ -258,7 +266,7 @@ Page({
         this.setData({
             payModalShow: !0,
             cardPayCount: t,
-            cardPayTotal: 50 * t
+            cardPayTotal: price * t
         }), wx.cloud.callFunction({
             name: "getUser"
         }).then(function(t) {
@@ -286,7 +294,7 @@ Page({
             title: "钱袋余额不足",
             icon: "none"
         }) : this.checkCount(function() {
-            c = 5e3 * e, wx.cloud.callFunction({
+            c = price * 100 * e, wx.cloud.callFunction({
                 name: "setMoneyBag",
                 data: {
                     money: r - o
@@ -303,7 +311,7 @@ Page({
         });
         var a = this.data.cardPayCount;
         this.checkCount(function() {
-            c = 5e3 * a, wx.cloud.callFunction({
+            c = price * 100 * a, wx.cloud.callFunction({
                 name: "getPayInfo",
                 data: {
                     orderId: "" + Date.parse(new Date()) + Math.round(1e3 * Math.random()),
