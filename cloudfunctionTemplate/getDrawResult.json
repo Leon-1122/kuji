@@ -2,8 +2,7 @@
   {
     "name": "抽奖",
     "value": {
-      "projectDatabaseName": "project-detail-fgo",
-      "projectID": "MmkbMk1MzaMBJ174yS6Aom6vpFzt6PlODYfqdD1qWmisO3aI",
+      "projectDetailId": "MmkbMk1MzaMBJ174yS6Aom6vpFzt6PlODYfqdD1qWmisO3aI",
       "count": 2
     }
   }

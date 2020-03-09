@@ -34,7 +34,7 @@ Page({
         modalShow: !1
     },
     onLoad: function(t) {
-        this.getUser(), n = t.dbname, o = t.pjname, this.getData(n);
+        this.getUser(), n = t.pjid, o = t.pjname, this.getData(n);
     },
     getUser: function() {
         wx.cloud.callFunction({
@@ -45,7 +45,8 @@ Page({
     },
     getData: function(a, e) {
         var n = this;
-        t.collection(a).where({
+        var projectId = a;
+        t.collection('project-detail').where({
             machineCode: machineCode
         }).orderBy("order", "asc").get().then(function(t) {
             var a = !0;
@@ -62,7 +63,7 @@ Page({
                 try {
                     for (var l, u = t.data[Symbol.iterator](); !(o = (l = u.next()).done); o = !0) {
                         var d = l.value;
-                        if (d.cardRemain > 0)
+                        if (d.cardRemain > 0 && d.projectId === projectId)
                             if ("break" === function() {
                                     var a = d._id,
                                         o = d.order,
@@ -114,7 +115,7 @@ Page({
     },
     refreshData: function(a) {
         var e = this;
-        t.collection(n).doc(i).get().then(function(t) {
+        t.collection('project-detail').doc(i).get().then(function(t) {
             var n = t.data,
                 o = n._id,
                 c = n.order,
@@ -148,7 +149,7 @@ Page({
     onShareAppMessage: function() {
         return {
             title: "".concat(o, " 一番赏等你来购买！"),
-            path: "/pages/lottery/lottery?dbname=".concat(n, "&pjname=").concat(o)
+            path: "/pages/lottery/lottery?pjid=".concat(n, "&pjname=").concat(o)
         };
     },
     previewTopImg: function() {
@@ -173,7 +174,7 @@ Page({
         var e = this;
         wx.showLoading({
             title: "加载中"
-        }), t.collection(n).where({
+        }), t.collection('project-detail').where({
             machineCode: machineCode, 
             order: a
         }).get().then(function(t) {
@@ -300,7 +301,7 @@ Page({
                     money: r - o
                 }
             }).then(function(a) {
-                t.callDraw(n, i, e);
+                t.callDraw(i, e);
             }).catch(console.error);
         });
     },
@@ -328,7 +329,7 @@ Page({
                         signType: s,
                         paySign: c,
                         success: function(e) {
-                            t.callDraw(n, i, a);
+                            t.callDraw(i, a);
                         },
                         fail: function(t) {
                             wx.hideLoading(), wx.showToast({
@@ -349,7 +350,7 @@ Page({
     checkCount: function(a) {
         var e = this,
             o = this.data.cardPayCount;
-        t.collection(n).doc(i).get().then(function(t) {
+        t.collection('project-detail').doc(i).get().then(function(t) {
             var n = t.data.cardRemain;
             n < 5 && 5 === o ? (wx.showToast({
                 title: "余量不足",
@@ -379,19 +380,18 @@ Page({
             console.error(t);
         });
     },
-    callDraw: function(t, a, e) {
+    callDraw: function(a, e) {
         var n = this;
         wx.showLoading({
             title: "加载中"
         }), wx.cloud.callFunction({
             name: "getDrawResult",
             data: {
-                projectDatabaseName: t,
-                projectID: a,
+                projectDetailId: a,
                 count: e
             }
         }).then(function(o) {
-            o.result.updateFail ? n.callDraw(t, a, e) : o.result.callRefund ? n.refund() : (console.log(o.result),
+            o.result.updateFail ? n.callDraw(a, e) : o.result.callRefund ? n.refund() : (console.log(o.result),
                 o.result.last ? n.setData({
                     lotteryPop: !0,
                     payModalShow: !1,

@@ -6,6 +6,6 @@
             <text class="sold-out" wx:if="{{item.soldOut}}">（售罄）</text>
             <text class="coming-soon" wx:if="{{item.comingSoon}}">（即将开售）</text>
         </view>
-        <image bind:tap="onBannerImgTap" data-cantap="{{item.canTap}}" data-dbname="{{item.databaseName}}" data-pjname="{{item.name}}" mode="widthFix" src="{{item.bannerImg}}"></image>
+        <image bind:tap="onBannerImgTap" data-cantap="{{item.canTap}}" data-pjid="{{item._id}}" data-pjname="{{item.name}}" mode="widthFix" src="{{item.bannerImg}}"></image>
     </view>
 </view>

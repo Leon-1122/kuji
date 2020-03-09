@@ -30,9 +30,9 @@ Page({
         });
     },
     onBannerImgTap: function(t) {
-        var e = t.currentTarget.dataset, n = e.dbname, o = e.pjname;
+        var e = t.currentTarget.dataset, n = e.pjid, o = e.pjname;
         e.cantap ? wx.navigateTo({
-            url: "/pages/lottery/lottery?dbname=".concat(n, "&pjname=").concat(o)
+            url: "/pages/lottery/lottery?pjid=".concat(n, "&pjname=").concat(o)
         }) : wx.showToast({
             title: "已售罄",
             icon: "none"

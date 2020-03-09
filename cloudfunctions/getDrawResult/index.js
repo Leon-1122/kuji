@@ -39,7 +39,7 @@ exports.main = async(event, context) => {
     try {
         var lastProduct, drawList = []
         const transaction = await db.startTransaction()
-        const projectRes = await transaction.collection(event.projectDatabaseName).doc(event.projectID).get()
+        const projectRes = await transaction.collection('project-detail').doc(event.projectDetailId).get()
         const userInfo = await db.collection('user').where({
             _openid: openid
         }).get()
@@ -88,7 +88,7 @@ exports.main = async(event, context) => {
             }
 
             // 更新奖品剩余数量
-            const updateProjectRes = await transaction.collection(event.projectDatabaseName).doc(event.projectID).update({
+            const updateProjectRes = await transaction.collection('project-detail').doc(event.projectDetailId).update({
                 data: {
                     cardRemain: _.inc(drawList.length * -1),
                     productList: productList
