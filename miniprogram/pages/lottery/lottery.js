@@ -34,6 +34,7 @@ Page({
         modalShow: !1
     },
     onLoad: function(t) {
+        console.log('machineCode:' + machineCode);
         this.getUser(), n = t.pjid, o = t.pjname, this.getData(n);
     },
     getUser: function() {
@@ -50,6 +51,7 @@ Page({
             machineCode: machineCode
         }).orderBy("order", "asc").get().then(function(t) {
             var a = !0;
+            console.log(t);
             if (t.data.map(function(t) {
                     t.cardRemain > 0 && (a = !1);
                 }), a) n.setData({
@@ -382,39 +384,46 @@ Page({
     },
     callDraw: function(a, e) {
         var n = this;
-        wx.showLoading({
-            title: "加载中"
-        }), wx.cloud.callFunction({
-            name: "getDrawResult",
-            data: {
-                projectDetailId: a,
-                count: e
-            }
-        }).then(function(o) {
-            o.result.updateFail ? n.callDraw(a, e) : o.result.callRefund ? n.refund() : (console.log(o.result),
-                o.result.last ? n.setData({
-                    lotteryPop: !0,
-                    payModalShow: !1,
-                    lastProduct: o.result.last,
-                    drawCount: e,
-                    productDrawed: o.result.list
-                }, function() {
-                    wx.hideLoading();
-                }) : n.setData({
-                    lotteryPop: !0,
-                    payModalShow: !1,
-                    lastProduct: null,
-                    drawCount: e,
-                    productDrawed: o.result.list
-                }, function() {
-                    wx.hideLoading();
-                }));
-        }).catch(function(t) {
-            wx.showToast({
-                title: "出错啦！请联系客服",
-                icon: "none"
-            });
+
+        // 跳转到翻奖页面
+        wx.navigateTo({
+            url: '../luckDraw/luckDraw?projectDetailId='.concat(a, '&count=').concat(e)
         });
+        
+        // wx.showLoading({
+        //     title: "加载中"
+        // });
+        // wx.cloud.callFunction({
+        //     name: "getDrawResult",
+        //     data: {
+        //         projectDetailId: a,
+        //         count: e
+        //     }
+        // }).then(function(o) {
+        //     o.result.updateFail ? n.callDraw(a, e) : o.result.callRefund ? n.refund() : (console.log(o.result)
+        //         , o.result.last ? n.setData({
+        //             lotteryPop: !0,
+        //             payModalShow: !1,
+        //             lastProduct: o.result.last,
+        //             drawCount: e,
+        //             productDrawed: o.result.list
+        //         }, function() {
+        //             wx.hideLoading();
+        //         }) : n.setData({
+        //             lotteryPop: !0,
+        //             payModalShow: !1,
+        //             lastProduct: null,
+        //             drawCount: e,
+        //             productDrawed: o.result.list
+        //         }, function() {
+        //             wx.hideLoading();
+        //         }));
+        // }).catch(function(t) {
+        //     wx.showToast({
+        //         title: "出错啦！请联系客服",
+        //         icon: "none"
+        //     });
+        // });
     },
     changeStep: function() {
         var t = this.data.stepOne;
