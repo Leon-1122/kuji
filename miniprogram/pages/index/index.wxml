@@ -1,7 +1,7 @@
 <view class="container">
     <view class="main-wrapper" wx:for="{{project}}" wx:key="_id">
         <view class="info-wrap">
-            <text class="time-title">{{item.timeTitle}}</text>
+            <text class="time-title">第{{item.timeTitle}}期</text>
             <text class="name">{{item.name}}</text>
             <text class="sold-out" wx:if="{{item.soldOut}}">（售罄）</text>
             <text class="coming-soon" wx:if="{{item.comingSoon}}">（即将开售）</text>

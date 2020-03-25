@@ -385,45 +385,45 @@ Page({
     callDraw: function(a, e) {
         var n = this;
 
-        // 跳转到翻奖页面
-        wx.navigateTo({
-            url: '../luckDraw/luckDraw?projectDetailId='.concat(a, '&count=').concat(e)
-        });
+        // // 跳转到翻奖页面
+        // wx.navigateTo({
+        //     url: '../luckDraw/luckDraw?projectDetailId='.concat(a, '&count=').concat(e)
+        // });
         
-        // wx.showLoading({
-        //     title: "加载中"
-        // });
-        // wx.cloud.callFunction({
-        //     name: "getDrawResult",
-        //     data: {
-        //         projectDetailId: a,
-        //         count: e
-        //     }
-        // }).then(function(o) {
-        //     o.result.updateFail ? n.callDraw(a, e) : o.result.callRefund ? n.refund() : (console.log(o.result)
-        //         , o.result.last ? n.setData({
-        //             lotteryPop: !0,
-        //             payModalShow: !1,
-        //             lastProduct: o.result.last,
-        //             drawCount: e,
-        //             productDrawed: o.result.list
-        //         }, function() {
-        //             wx.hideLoading();
-        //         }) : n.setData({
-        //             lotteryPop: !0,
-        //             payModalShow: !1,
-        //             lastProduct: null,
-        //             drawCount: e,
-        //             productDrawed: o.result.list
-        //         }, function() {
-        //             wx.hideLoading();
-        //         }));
-        // }).catch(function(t) {
-        //     wx.showToast({
-        //         title: "出错啦！请联系客服",
-        //         icon: "none"
-        //     });
-        // });
+        wx.showLoading({
+            title: "加载中"
+        });
+        wx.cloud.callFunction({
+            name: "getDrawResult",
+            data: {
+                projectDetailId: a,
+                count: e
+            }
+        }).then(function(o) {
+            o.result.updateFail ? n.callDraw(a, e) : o.result.callRefund ? n.refund() : (console.log(o.result)
+                , o.result.last ? n.setData({
+                    lotteryPop: !0,
+                    payModalShow: !1,
+                    lastProduct: o.result.last,
+                    drawCount: e,
+                    productDrawed: o.result.list
+                }, function() {
+                    wx.hideLoading();
+                }) : n.setData({
+                    lotteryPop: !0,
+                    payModalShow: !1,
+                    lastProduct: null,
+                    drawCount: e,
+                    productDrawed: o.result.list
+                }, function() {
+                    wx.hideLoading();
+                }));
+        }).catch(function(t) {
+            wx.showToast({
+                title: "出错啦！请联系客服",
+                icon: "none"
+            });
+        });
     },
     changeStep: function() {
         var t = this.data.stepOne;
