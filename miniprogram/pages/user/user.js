@@ -1,7 +1,7 @@
 getApp();
 
-var Const = require('../../utils/const.js');
-var userId = wx.getStorageSync('userId');
+const req = require('../../req/index.js');
+let userId = wx.getStorageSync('mp-req-session-id');
 
 Page({
     data: {
@@ -15,68 +15,54 @@ Page({
             return;
         }
 
-        var code, encryptedData = o.detail.encryptedData, iv = o.detail.iv;
-        console.log(o.detail.encryptedData);
-        console.log(o.detail.iv);
-        
-        wx.login({
-            success: function(res) {
-                console.log(res.code);
-                code = res.code;
-
-                wx.request({
-                    url: Const.getUrl() + 'login',
-                    method: 'POST',
-                    data: {
-                        code,
-                        encryptedData,
-                        iv
-                    },
-                    success: function(res) {
-                        console.log(res.data);
-                        userId = res.data.userId;
-                        wx.setStorageSync('userId', userId);
-                    },
-                    fail: function(e) {
-                        console.error(e);
-                        wx.showToast({
-                            title: "出错啦！请联系客服",
-                            icon: "none"
-                        });
-                    }
-                });
-            }
-        })
-    },
-    getUser: function(t) {
-        var that = this;
-        if (userId) {
-            wx.request({
-                url: Const.getUrl() + 'getUserInfo',
-                method: 'GET',
-                data: {
-                    userId
-                },
-                success: function(res) {
-                    console.log(res.data);
-
-                    if (res.data.userInfo) {
-                        that.setData({
-                            userInfo: res.data.userInfo
-                        });
-                    } else {
-                        wx.removeStorageSync('userId');
-                        userId = null;
-                    }
-                },
-                fail: function(e) {
-                    console.error(e);
+        var code, userInfo = o.detail.userInfo,
+            that = this;
+        req.user.updateUserInfo(userInfo)
+            .then((res) => {
+                console.log(res);
+                if (res.code === 0) {
+                    that.setData({
+                        userInfo: res.data.userInfo
+                    });
+                } else {
                     wx.showToast({
                         title: "出错啦！请联系客服",
                         icon: "none"
                     });
                 }
+            })
+            .catch((err) => {
+                console.log(err);
+                wx.showToast({
+                    title: "出错啦！请联系客服",
+                    icon: "none"
+                });
             });
+    },
+    getUser: function(t) {
+        var that = this;
+        if (userId) {
+            req.user.getUserInfo(userId)
+                .then((res) => {
+                    console.log(res);
+                    if (res.code === 0) {
+                        that.setData({
+                            userInfo: res.data.userInfo
+                        });
+                    } else {
+                        wx.showToast({
+                            title: "出错啦！请联系客服",
+                            icon: "none"
+                        });
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
+                });
         }
     }
 });

@@ -3,8 +3,7 @@
     "pages/index/index",
     "pages/bag/bag",
     "pages/user/user",
-    "pages/lottery/lottery",
-    "pages/luckDraw/luckDraw"
+    "pages/lottery/lottery"
   ],
   "window": {
     "backgroundColor": "#000000",

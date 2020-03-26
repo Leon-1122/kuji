@@ -9,7 +9,7 @@ var t = wx.cloud.database(),
     i = "",
     c = 0,
     price = 0,
-    machineCode = wx.getStorageSync("machineCode");
+    machineId = wx.getStorageSync("machineId");
 
 Page({
     data: {
@@ -34,7 +34,7 @@ Page({
         modalShow: !1
     },
     onLoad: function(t) {
-        console.log('machineCode:' + machineCode);
+        console.log('machineId:' + machineId);
         this.getUser(), n = t.pjid, o = t.pjname, this.getData(n);
     },
     getUser: function() {
@@ -48,7 +48,7 @@ Page({
         var n = this;
         var projectId = a;
         t.collection('project-detail').where({
-            machineCode: machineCode
+            machineId: machineId
         }).orderBy("order", "asc").get().then(function(t) {
             var a = !0;
             console.log(t);
@@ -177,7 +177,7 @@ Page({
         wx.showLoading({
             title: "加载中"
         }), t.collection('project-detail').where({
-            machineCode: machineCode, 
+            machineId: machineId, 
             order: a
         }).get().then(function(t) {
             var a = t.data[0],

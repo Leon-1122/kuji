@@ -1,14 +1,17 @@
 getApp();
 
-var machineCode = '', t = wx.cloud.database();
+var machineId = '', t = wx.cloud.database();
 
 Page({
     data: {
         project: []
     },
-    onLoad: function(t) {
-        console.log(t), t.machineCode && (machineCode = t.machineCode);
-        wx.setStorageSync("machineCode", machineCode);
+    onLoad: function(param) {
+        console.log(param);
+        if (param.machineId) {
+            machineId = param.machineId;
+        }
+        wx.setStorageSync("machineId", machineId);
     },
     onShow: function() {
         this.getData();
@@ -19,7 +22,7 @@ Page({
     getData: function(e) {
         var n = this;
         t.collection("project").where({
-            machineCode: machineCode
+            machineId: machineId
         }).orderBy("order", "desc").get().then(function(t) {
             console.log(t.data);
             n.setData({
