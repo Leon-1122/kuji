@@ -1,7 +1,7 @@
 getApp();
 
 const req = require('../../req/index.js');
-let userId = wx.getStorageSync('mp-req-session-id');
+let userId = '';
 
 Page({
     data: {
@@ -9,6 +9,7 @@ Page({
         bagList: []
     },
     onShow: function() {
+        userId = wx.getStorageSync('mp-req-session-id');
         this.getData();
     },
     onHide: function() {},
@@ -47,7 +48,7 @@ Page({
                     }
                 })
                 .catch((err) => {
-                    console.log(err);
+                    console.error(err);
                     wx.showToast({
                         title: "出错啦！请联系客服",
                         icon: "none"

@@ -1,0 +1,18 @@
+.nick-name {
+    color: #ffffff;
+    font-weight: bold;
+    background-color: #007fff; 
+}
+
+.border-nick-name {
+    margin: 0 auto;
+    width: 300rpx;
+    border: 2rpx solid #ffffff;
+    border-radius: 8rpx;
+}
+
+.count-down {
+    margin-top: 50rpx;
+    margin-bottom: 50rpx;
+    text-align: center;
+}

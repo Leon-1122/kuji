@@ -1,111 +1,117 @@
 getApp();
-
-var t = wx.cloud.database(),
-    a = (t.command, t.command.aggregate, t.collection("user")),
-    e = !1,
-    n = "",
-    o = "",
-    r = !1,
-    i = "",
-    c = 0,
+const req = require('../../req/index.js');
+let userInfo = {},
+    userId = '',
+    machineId = '',
+    isLoggedIn = false,
+    lotteryId = '',
+    lotteryName = '',
+    openStatus = false,
+    totalFee = 0,
     price = 0,
-    machineId = wx.getStorageSync("machineId");
+    sortInfo = {};
+
+let t = wx.cloud.database(),
+    a = (t.command, t.command.aggregate, t.collection("user")),
+    i = "";
 
 Page({
     data: {
         topImg: "",
-        projectOrder: 0,
-        projectLength: 0,
+        lotteryOrder: 0,
+        lotteryLength: 0,
         cardRemain: 0,
         cardTotal: 0,
         price: 0,
-        tabListActive: !0,
+        tabListActive: true,
         productPreview: [],
         remainShow: [],
         payModalShow: !1,
         cardPayCount: 0,
         cardPayTotal: 0,
         moneyBagRemain: 0,
-        lotteryPop: !1,
+        lotteryPop: false,
         lastProduct: null,
-        stepOne: !0,
+        stepOne: true,
         drawCount: 0,
-        productDrawed: [],
-        modalShow: !1
+        productDrawn: [],
+        modalShow: false
     },
-    onLoad: function(t) {
-        console.log('machineId:' + machineId);
-        this.getUser(), n = t.pjid, o = t.pjname, this.getData(n);
+    onLoad: function(params) {
+        userInfo = wx.getStorageSync('userInfo');
+        userId = wx.getStorageSync('mp-req-session-id');
+        machineId = wx.getStorageSync("machineId");
+        lotteryId = params.mlid;
+        lotteryName = params.mlname;
+        userInfo = wx.getStorageSync('userInfo');
+        userId = wx.getStorageSync('mp-req-session-id');
+        machineId = wx.getStorageSync("machineId");
+
+        if (userId && userInfo) {
+            isLoggedIn = true;
+        }
+        this.getData(lotteryId);
     },
-    getUser: function() {
-        wx.cloud.callFunction({
-            name: "getUser"
-        }).then(function(t) {
-            e = t.result.data.length > 0;
-        });
-    },
-    getData: function(a, e) {
-        var n = this;
-        var projectId = a;
-        t.collection('project-detail').where({
-            machineId: machineId
-        }).orderBy("order", "asc").get().then(function(t) {
-            var a = !0;
-            console.log(t);
-            if (t.data.map(function(t) {
-                    t.cardRemain > 0 && (a = !1);
-                }), a) n.setData({
-                projectLength: t.data.length
-            }), n.switchData(1);
-            else {
-                var o = !0,
-                    c = !1,
-                    s = void 0,
-                    y = void 0;
-                try {
-                    for (var l, u = t.data[Symbol.iterator](); !(o = (l = u.next()).done); o = !0) {
-                        var d = l.value;
-                        if (d.cardRemain > 0 && d.projectId === projectId)
-                            if ("break" === function() {
-                                    var a = d._id,
-                                        o = d.order,
-                                        c = d.openStatus,
-                                        s = d.cardRemain,
-                                        y = d.cardTotal,
-                                        l = d.topImg,
-                                        u = d.productPreview,
-                                        h = d.productList;
-                                    r = c, i = a, price = d.price;
-                                    var w = [];
-                                    return u.map(function(t, a) {
-                                        w[a] = {
-                                            level: t.level
-                                        }, w[a].total = 0, w[a].remain = 0, h.map(function(e) {
-                                            e.level === t.level && (w[a].total += e.total, w[a].remain += e.remain);
-                                        });
-                                    }), n.setData({
-                                        cardRemain: s,
-                                        cardTotal: y,
-                                        topImg: l,
-                                        productPreview: u,
-                                        remainShow: w,
-                                        projectOrder: o,
-                                        projectLength: t.data.length,
-                                        price: price
-                                    }, e && e()), "break";
-                                }()) break;
-                    }
-                } catch (t) {
-                    c = !0, s = t;
-                } finally {
-                    try {
-                        o || null == u.return || u.return();
-                    } finally {
-                        if (c) throw s;
-                    }
+    getData: function(lotteryId, callback) {
+        var that = this;
+        req.machineLottery.getMachineLotteryDetail({
+                machineId,
+                lotteryId
+            })
+            .then((res) => {
+                console.log(res);
+                sortInfo = res.data.sortInfo;
+
+                if (res.data.count === 0) {
+                    that.setData({
+                        lotteryLength: 0
+                    });
+                } else if (res.data.lotteryInfo.cardTotal === 0) {
+                    that.switchData(1);
+                } else {
+                    let lotteryInfo = res.data.lotteryInfo;
+                    openStatus = lotteryInfo.status === 2 ? true : false;
+                    price = lotteryInfo.price;
+                    let remainShow = [];
+                    lotteryInfo.productPreview.map(function(preview, index) {
+                        remainShow[index] = {
+                            level: preview.level,
+                            total: 0,
+                            remain: 0
+                        };
+                        lotteryInfo.productList.map(function(product) {
+                            if (preview.level === product.level) {
+                                remainShow[index].total += product.total;
+                                remainShow[index].remain += product.remain;
+                            }
+                        });
+                    });
+
+                    that.setData({
+                        cardRemain: lotteryInfo.cardRemain,
+                        cardTotal: lotteryInfo.cardTotal,
+                        topImg: lotteryInfo.topImg,
+                        productPreview: lotteryInfo.productPreview,
+                        remainShow: remainShow,
+                        lotteryOrder: res.data.sortInfo[lotteryInfo.id],
+                        lotteryLength: res.data.count,
+                        price: lotteryInfo.price,
+                        lotteryPop: false,
+                        stepOne: true
+                    });
                 }
-            }
-        });
+
+                if (callback) {
+                    callback();
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+                wx.showToast({
+                    title: "出错啦！请联系客服",
+                    icon: "none"
+                });
+            });
     },
     onPullDownRefresh: function() {
         this.refreshData(wx.stopPullDownRefresh());
@@ -115,320 +121,351 @@ Page({
             title: "加载中"
         }), this.refreshData(wx.hideLoading());
     },
-    refreshData: function(a) {
-        var e = this;
-        t.collection('project-detail').doc(i).get().then(function(t) {
-            var n = t.data,
-                o = n._id,
-                c = n.order,
-                s = n.openStatus,
-                l = n.cardRemain,
-                y = n.cardTotal,
-                u = n.topImg,
-                d = n.productPreview,
-                h = n.productList;
-            r = s, i = o, price = n.price;
-            var w = [];
-            d.map(function(t, a) {
-                w[a] = {
-                    level: t.level
-                }, w[a].total = 0, w[a].remain = 0, h.map(function(e) {
-                    e.level === t.level && (w[a].total += e.total, w[a].remain += e.remain);
-                });
-            }), e.setData({
-                cardRemain: l,
-                cardTotal: y,
-                topImg: u,
-                productPreview: d,
-                remainShow: w,
-                projectOrder: c,
-                lotteryPop: !1,
-                stepOne: !0,
-                price: price
-            }, a && a());
-        });
+    refreshData: function(callback) {
+        this.getData(lotteryId, callback);
+
     },
     onShareAppMessage: function() {
         return {
-            title: "".concat(o, " 一番赏等你来购买！"),
-            path: "/pages/lottery/lottery?pjid=".concat(n, "&pjname=").concat(o)
+            title: "".concat(lotteryName, " 一番赏等你来购买！"),
+            path: "/pages/lottery/lottery?mlid=".concat(lotteryId, "&mlname=", lotteryName)
         };
     },
     previewTopImg: function() {
-        var t = this.data.topImg;
+        let topImg = this.data.topImg;
         wx.previewImage({
-            current: t,
-            urls: [t]
+            current: topImg,
+            urls: [topImg]
         });
     },
     onSwiperLeft: function() {
-        var t = this.data,
-            a = t.projectOrder,
-            e = t.projectLength;
-        a > 1 ? a -= 1 : a = e, this.switchData(a);
+        let order = this.data.lotteryOrder,
+            totalLength = this.data.lotteryLength;
+        if (order > 1) {
+            order--;
+        } else {
+            order = totalLength;
+        }
+        this.switchData(order);
     },
     onSwiperRight: function() {
-        var t = this.data,
-            a = t.projectOrder;
-        a < t.projectLength ? a += 1 : a = 1, this.switchData(a);
+        let order = this.data.lotteryOrder,
+            totalLength = this.data.lotteryLength;
+        if (order < totalLength) {
+            order++;
+        } else {
+            order = 1;
+        }
+        this.switchData(order);
     },
-    switchData: function(a) {
-        var e = this;
+    switchData: function(order) {
         wx.showLoading({
             title: "加载中"
-        }), t.collection('project-detail').where({
-            machineId: machineId, 
-            order: a
-        }).get().then(function(t) {
-            var a = t.data[0],
-                n = a._id,
-                o = a.order,
-                c = a.openStatus,
-                s = a.cardRemain,
-                y = a.cardTotal,
-                l = a.topImg,
-                u = a.productPreview,
-                d = a.productList;
-            r = c, i = n;
-            var h = [];
-            u.map(function(t, a) {
-                h[a] = {
-                    level: t.level
-                }, h[a].remain = 0, d.map(function(e) {
-                    e.level === t.level && (h[a].total = e.total, h[a].remain += e.remain);
-                });
-            }), e.setData({
-                cardRemain: s,
-                cardTotal: y,
-                topImg: l,
-                productPreview: u,
-                remainShow: h,
-                projectOrder: o
-            }, wx.hideLoading());
         });
+        let newLotteryId = '';
+
+        for (let key in sortInfo) {
+            if (sortInfo[key] === order) {
+                newLotteryId = key;
+                break;
+            }
+        }
+
+        this.getData(newLotteryId, wx.hideLoading());
     },
-    onTabChange: function(t) {
+    onTabChange: function(event) {
         this.setData({
             tabListActive: !this.data.tabListActive
         });
     },
-    previewProduct: function(t) {
-        var a = this.data.productPreview,
-            e = [];
-        a.map(function(t) {
-            e.push(t.productImg);
+    previewProduct: function(event) {
+        let productPreview = this.data.productPreview,
+            urls = [];
+        productPreview.map(function(item) {
+            urls.push(item.productImg);
         }), wx.previewImage({
-            current: t.currentTarget.dataset.url,
-            urls: e
+            current: event.currentTarget.dataset.url,
+            urls: urls
         });
     },
-    previewLastProduct: function(t) {
+    previewLastProduct: function(event) {
         wx.previewImage({
-            current: t.currentTarget.dataset.url,
-            urls: [t.currentTarget.dataset.url]
+            current: event.currentTarget.dataset.url,
+            urls: [event.currentTarget.dataset.url]
         });
     },
-    previewDrawProduct: function(t) {
-        var a = this.data.productDrawed,
-            e = [];
-        a.map(function(t) {
-            e.push(t.productImg);
+    previewDrawProduct: function(event) {
+        let productDrawn = this.data.productDrawn,
+            urls = [];
+        productDrawn.map(function(item) {
+            urls.push(item.productImg);
         }), wx.previewImage({
-            current: t.currentTarget.dataset.url,
-            urls: e
+            current: event.currentTarget.dataset.url,
+            urls: urls
         });
     },
-    onGetUserInfo: function(n) {
-        var o = this;
-        if (e) {
-            if (r) this.data.cardRemain < parseInt(n.currentTarget.dataset.count) ? wx.showToast({
-                title: "余量不足",
-                icon: "none"
-            }) : this.showPayModal(parseInt(n.currentTarget.dataset.count));
-            else wx.showToast({
-                title: "此套即将开售，请耐心等待",
-                icon: "none"
-            });
-        } else {
-            var i = n.detail.userInfo;
-            i.moneyBag = 0, i.bagList = [], i.createTime = t.serverDate(),
-                a.add({
-                    data: i
-                }).then(function(t) {
-                    e = !0, r ? o.showPayModal(parseInt(n.currentTarget.dataset.count)) : wx.showToast({
-                        title: "此套即将开售，请耐心等待",
-                        icon: "none"
-                    });
-                }).catch(function(t) {
-                    console.error(t);
+    onGetUserInfo: function(event) {
+        if (isLoggedIn) {
+            if (openStatus) {
+                this.data.cardRemain < parseInt(event.currentTarget.dataset.count) ? wx.showToast({
+                    title: "余量不足",
+                    icon: "none"
+                }) : this.showPayModal(parseInt(event.currentTarget.dataset.count));
+            } else {
+                wx.showToast({
+                    title: "此套即将开售，请耐心等待",
+                    icon: "none"
                 });
-        }
-    },
-    showPayModal: function(t) {
-        var a = this;
-        this.setData({
-            payModalShow: !0,
-            cardPayCount: t,
-            cardPayTotal: price * t
-        }), wx.cloud.callFunction({
-            name: "getUser"
-        }).then(function(t) {
-            var e = 0;
-            t.result.data[0].moneyBag && (e = t.result.data[0].moneyBag), a.setData({
-                moneyBagRemain: e
-            });
-        });
-    },
-    closePayModal: function() {
-        this.setData({
-            payModalShow: !1
-        });
-    },
-    moneyBagPay: function() {
-        var t = this;
-        wx.showLoading({
-            title: "加载中"
-        });
-        var a = this.data,
-            e = a.cardPayCount,
-            o = a.cardPayTotal,
-            r = a.moneyBagRemain;
-        o > r ? wx.showToast({
-            title: "钱袋余额不足",
-            icon: "none"
-        }) : this.checkCount(function() {
-            c = price * 100 * e, wx.cloud.callFunction({
-                name: "setMoneyBag",
-                data: {
-                    money: r - o
-                }
-            }).then(function(a) {
-                t.callDraw(i, e);
-            }).catch(console.error);
-        });
-    },
-    wechatPay: function() {
-        var t = this;
-        wx.showLoading({
-            title: "加载中"
-        });
-        var a = this.data.cardPayCount;
-        this.checkCount(function() {
-            c = price * 100 * a, wx.cloud.callFunction({
-                name: "getPayInfo",
-                data: {
-                    orderId: "" + Date.parse(new Date()) + Math.round(1e3 * Math.random()),
-                    money: c
-                }
-            }).then(function(e) {
-                var o = e.result;
-                if (o.code === 0) {
-                    r = o.data.nonceStr, c = o.data.paySign, s = o.data.signType, l = o.data.timeStamp;
-                    wx.requestPayment({
-                        timeStamp: l,
-                        nonceStr: r,
-                        package: o.data.package,
-                        signType: s,
-                        paySign: c,
-                        success: function(e) {
-                            t.callDraw(i, a);
-                        },
-                        fail: function(t) {
-                            wx.hideLoading(), wx.showToast({
-                                title: "支付失败",
+            }
+        } else {
+            userInfo = event.detail.userInfo
+            let that = this;
+            if (userInfo) {
+                req.user.updateUserInfo(userInfo)
+                    .then((res) => {
+                        console.log(res);
+                        if (res.code === 0) {
+                            wx.setStorageSync('userInfo', userInfo);
+                            isLoggedIn = true;
+
+                            if (openStatus) {
+                                that.showPayModal(parseInt(event.currentTarget.dataset.count))
+                            } else {
+                                wx.showToast({
+                                    title: "此套即将开售，请耐心等待",
+                                    icon: "none"
+                                });
+                            }
+                        } else {
+                            wx.showToast({
+                                title: "出错啦！请联系客服",
                                 icon: "none"
                             });
                         }
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                        wx.showToast({
+                            title: "出错啦！请联系客服",
+                            icon: "none"
+                        });
+                    });
+            }
+        }
+    },
+    showPayModal: function(buyNum) {
+        let that = this;
+
+        req.user.getUserInfo(userId)
+            .then((res) => {
+                console.log(res);
+                if (res.code === 0) {
+                    that.setData({
+                        payModalShow: true,
+                        cardPayCount: buyNum,
+                        cardPayTotal: price * buyNum,
+                        moneyBagRemain: res.data.userInfo.moneyBag
                     });
                 } else {
-                    wx.hideLoading(), wx.showToast({
-                        title: "支付失败",
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
                         icon: "none"
                     });
                 }
+            })
+            .catch((err) => {
+                console.log(err);
+                wx.showToast({
+                    title: "出错啦！请联系客服",
+                    icon: "none"
+                });
             });
+    },
+    closePayModal: function() {
+        this.setData({
+            payModalShow: false
         });
     },
-    checkCount: function(a) {
-        var e = this,
-            o = this.data.cardPayCount;
-        t.collection('project-detail').doc(i).get().then(function(t) {
-            var n = t.data.cardRemain;
-            n < 5 && 5 === o ? (wx.showToast({
-                title: "余量不足",
-                icon: "none"
-            }), e.refreshData()) : n < 3 && (3 === o || 5 === o) ? (wx.showToast({
-                title: "余量不足",
-                icon: "none"
-            }), e.refreshData()) : 0 === n ? (wx.showToast({
-                title: "此套已售罄",
-                icon: "none"
-            }), e.refreshData()) : a && a();
+    moneyBagPay: function() {
+        let that = this,
+            cardPayCount = this.data.cardPayCount,
+            cardPayTotal = this.data.cardPayTotal,
+            moneyBagRemain = this.data.moneyBagRemain;
+
+        wx.showLoading({
+            title: "加载中"
         });
+
+        if (cardPayTotal > moneyBagRemain) {
+            wx.showToast({
+                title: "钱袋余额不足",
+                icon: "none"
+            });
+        } else {
+            this.checkCount(function() {
+                req.user.moneyBagPay(cardPayTotal)
+                    .then((res) => {
+                        console.log(res);
+                        if (res.code === 0) {
+                            that.callDraw(cardPayCount);
+                        } else {
+                            wx.showToast({
+                                title: "出错啦！请联系客服",
+                                icon: "none"
+                            });
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        wx.showToast({
+                            title: "出错啦！请联系客服",
+                            icon: "none"
+                        });
+                    });
+            });
+        }
+    },
+    wechatPay: function() {
+        let that = this;
+        wx.showLoading({
+            title: "加载中"
+        });
+        let cardPayCount = this.data.cardPayCount;
+        this.checkCount(function() {
+            totalFee = price * 100 * cardPayCount;
+            req.user.wechatPay(totalFee)
+                .then((res) => {
+                    console.log(res);
+                    if (res.code === 0) {
+                        let data = res.data;
+                        wx.requestPayment({
+                            timeStamp: data.timeStamp,
+                            nonceStr: data.nonceStr,
+                            package: data.package,
+                            signType: data.signType,
+                            paySign: data.paySign,
+                            success: function(o) {
+                                console.log(o);
+                                that.callDraw(cardPayCount);
+                            },
+                            fail: function(o) {
+                                console.log(o);
+                                wx.showToast({
+                                    title: "支付失败",
+                                    icon: "none"
+                                });
+                            }
+                        });
+                    } else {
+                        wx.showToast({
+                            title: "支付失败",
+                            icon: "none"
+                        });
+                    }
+                }).catch((err) => {
+                    console.log(err);
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
+                });
+        });
+    },
+    checkCount: function(callback) {
+        let that = this,
+            cardPayCount = this.data.cardPayCount;
+
+        req.machineLottery.getCardRemain(lotteryId)
+            .then((res) => {
+                console.log(res);
+                if (res.code === 0) {
+                    let cardRemain = res.data.cardRemain;
+
+                    if (cardRemain < cardPayCount) {
+                        wx.showToast({
+                            title: "余量不足",
+                            icon: "none"
+                        });
+                        that.refreshData();
+                    } else if (cardRemain === 0) {
+                        wx.showToast({
+                            title: "此套已售罄",
+                            icon: "none"
+                        });
+                        that.refreshData()
+                    } else {
+                        if (callback) {
+                            callback();
+                        }
+                    }
+                } else {
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                wx.showToast({
+                    title: "出错啦！请联系客服",
+                    icon: "none"
+                });
+            });
     },
     refund: function() {
-        wx.cloud.callFunction({
-            name: "setRefund",
-            data: {
-                money: c / 100
-            }
-        }).then(function(t) {
-            wx.showToast({
-                duration: 2e3,
-                title: "被抢光啦！支付金额已放入钱袋，换一套试试吧！",
-                icon: "none"
-            });
-        }).catch(function(t) {
-            console.error(t);
-        });
-    },
-    callDraw: function(a, e) {
-        var n = this;
-
-        // 跳转到翻奖页面
-        wx.navigateTo({
-            url: '../luckDraw/luckDraw?projectDetailId='.concat(a, '&count=').concat(e)
-        });
-        
-        // wx.showLoading({
-        //     title: "加载中"
-        // });
         // wx.cloud.callFunction({
-        //     name: "getDrawResult",
+        //     name: "setRefund",
         //     data: {
-        //         projectDetailId: a,
-        //         count: e
+        //         money: totalFee / 100
         //     }
-        // }).then(function(o) {
-        //     o.result.updateFail ? n.callDraw(a, e) : o.result.callRefund ? n.refund() : (console.log(o.result)
-        //         , o.result.last ? n.setData({
-        //             lotteryPop: !0,
-        //             payModalShow: !1,
-        //             lastProduct: o.result.last,
-        //             drawCount: e,
-        //             productDrawed: o.result.list
-        //         }, function() {
-        //             wx.hideLoading();
-        //         }) : n.setData({
-        //             lotteryPop: !0,
-        //             payModalShow: !1,
-        //             lastProduct: null,
-        //             drawCount: e,
-        //             productDrawed: o.result.list
-        //         }, function() {
-        //             wx.hideLoading();
-        //         }));
-        // }).catch(function(t) {
+        // }).then(function(t) {
         //     wx.showToast({
-        //         title: "出错啦！请联系客服",
+        //         duration: 2e3,
+        //         title: "被抢光啦！支付金额已放入钱袋，换一套试试吧！",
         //         icon: "none"
         //     });
+        // }).catch(function(t) {
+        //     console.error(t);
         // });
     },
+    callDraw: function(count) {
+        var that = this;
+
+        wx.showLoading({
+            title: "加载中"
+        });
+
+        req.machineLottery.getDrawResult(lotteryId, count)
+            .then((res) => {
+                console.log(res);
+                if (res.code === 0) {
+                    that.setData({
+                        lotteryPop: true,
+                        payModalShow: false,
+                        lastProduct: res.data.lastProduct,
+                        drawCount: count,
+                        productDrawn: res.data.drawnList
+                    });
+                    wx.hideLoading();
+                } else {
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                wx.showToast({
+                    title: "出错啦！请联系客服",
+                    icon: "none"
+                });
+            });
+    },
     changeStep: function() {
-        var t = this.data.stepOne;
         this.setData({
-            stepOne: !t
+            stepOne: !this.data.stepOne
         });
     },
     lotteryClose: function() {
@@ -436,12 +473,12 @@ Page({
     },
     showBuyInfo: function() {
         this.setData({
-            modalShow: !0
+            modalShow: true
         });
     },
     closeModal: function() {
         this.setData({
-            modalShow: !1
+            modalShow: false
         });
     },
     goBag: function() {

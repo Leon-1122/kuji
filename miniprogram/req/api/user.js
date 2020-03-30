@@ -20,6 +20,26 @@ function install(req, request) {
                 }
             });
         },
+        moneyBagPay(payment) {
+            const url = `${req.apiUrl}/api/v1/wx/moneyBagPay`;
+            return request({
+                url,
+                method: 'PUT',
+                data: {
+                    payment
+                }
+            });
+        },
+        wechatPay(payment) {
+            const url = `${req.apiUrl}/api/v1/wx/wechatPay`;
+            return request({
+                url,
+                method: 'PUT',
+                data: {
+                    payment
+                }
+            });
+        },
     };
 }
 

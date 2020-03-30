@@ -1,0 +1,3 @@
+<button ontap="startCount" class="nick-name border-nick-name">开始倒计时</button>
+<view class="count-down">倒计时: {{timeout}}</view>
+<button ontap="stopCount" class="nick-name border-nick-name">结束倒计时</button>

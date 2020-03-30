@@ -1,6 +1,7 @@
 const req = require('../utils/mp-req/index.js');
 // api
 const userApi = require('./api/user.js');
+const machineLotteryApi = require('./api/machineLottery.js');
 
 const apiUrlTable = {
     local: 'http://localhost:1337',
@@ -51,5 +52,6 @@ req.init({
 });
 
 req.use(userApi);
+req.use(machineLotteryApi);
 
 module.exports = req;
