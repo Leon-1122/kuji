@@ -7,13 +7,8 @@ let userInfo = {},
     lotteryId = '',
     lotteryName = '',
     openStatus = false,
-    totalFee = 0,
     price = 0,
     sortInfo = {};
-
-let t = wx.cloud.database(),
-    a = (t.command, t.command.aggregate, t.collection("user")),
-    i = "";
 
 Page({
     data: {
@@ -26,7 +21,7 @@ Page({
         tabListActive: true,
         productPreview: [],
         remainShow: [],
-        payModalShow: !1,
+        payModalShow: false,
         cardPayCount: 0,
         cardPayTotal: 0,
         moneyBagRemain: 0,
@@ -43,9 +38,6 @@ Page({
         machineId = wx.getStorageSync("machineId");
         lotteryId = params.mlid;
         lotteryName = params.mlname;
-        userInfo = wx.getStorageSync('userInfo');
-        userId = wx.getStorageSync('mp-req-session-id');
-        machineId = wx.getStorageSync("machineId");
 
         if (userId && userInfo) {
             isLoggedIn = true;
@@ -303,7 +295,7 @@ Page({
             });
         } else {
             this.checkCount(function() {
-                req.user.moneyBagPay(cardPayTotal)
+                req.user.moneyBagPay(lotteryId, cardPayCount)
                     .then((res) => {
                         console.log(res);
                         if (res.code === 0) {
@@ -332,8 +324,7 @@ Page({
         });
         let cardPayCount = this.data.cardPayCount;
         this.checkCount(function() {
-            totalFee = price * 100 * cardPayCount;
-            req.user.wechatPay(totalFee)
+            req.user.wechatPay(lotteryId, cardPayCount)
                 .then((res) => {
                     console.log(res);
                     if (res.code === 0) {

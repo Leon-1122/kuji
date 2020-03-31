@@ -20,23 +20,25 @@ function install(req, request) {
                 }
             });
         },
-        moneyBagPay(payment) {
+        moneyBagPay(lotteryId, num) {
             const url = `${req.apiUrl}/api/v1/wx/moneyBagPay`;
             return request({
                 url,
                 method: 'PUT',
                 data: {
-                    payment
+                    lotteryId,
+                    num,
                 }
             });
         },
-        wechatPay(payment) {
+        wechatPay(lotteryId, num) {
             const url = `${req.apiUrl}/api/v1/wx/wechatPay`;
             return request({
                 url,
                 method: 'PUT',
                 data: {
-                    payment
+                    lotteryId,
+                    num
                 }
             });
         },
