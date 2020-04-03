@@ -8,7 +8,8 @@ let userInfo = {},
     lotteryName = '',
     openStatus = false,
     price = 0,
-    sortInfo = {};
+    sortInfo = {},
+    orderId = '';
 
 Page({
     data: {
@@ -205,7 +206,7 @@ Page({
         req.machineLottery.updateQueuePayStep(lotteryId)
             .then((res) => {
                 console.log(res);
-               
+
                 if (res.code === 0) {
                     if (isLoggedIn) {
                         if (openStatus) {
@@ -331,7 +332,8 @@ Page({
                     .then((res) => {
                         console.log(res);
                         if (res.code === 0) {
-                            that.callDraw(cardPayCount);
+                            orderId = res.data.orderId;
+                            that.callDraw(cardPayCount, orderId);
                         } else if (res.code === -10) {
                             wx.hideLoading();
                             this.setData({
@@ -371,6 +373,7 @@ Page({
                     console.log(res);
                     if (res.code === 0) {
                         let data = res.data;
+                        orderId = res.data.orderId;
                         wx.requestPayment({
                             timeStamp: data.timeStamp,
                             nonceStr: data.nonceStr,
@@ -379,7 +382,7 @@ Page({
                             paySign: data.paySign,
                             success: function(o) {
                                 console.log(o);
-                                that.callDraw(cardPayCount);
+                                that.callDraw(cardPayCount, orderId);
                             },
                             fail: function(o) {
                                 console.log(o);
@@ -472,14 +475,14 @@ Page({
         //     console.error(t);
         // });
     },
-    callDraw: function(count) {
+    callDraw: function (count, orderId) {
         var that = this;
 
         wx.showLoading({
             title: "加载中"
         });
 
-        req.machineLottery.getDrawResult(lotteryId, count)
+        req.machineLottery.getDrawResult(lotteryId, count, orderId)
             .then((res) => {
                 console.log(res);
                 if (res.code === 0) {

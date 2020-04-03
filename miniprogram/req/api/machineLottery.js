@@ -49,14 +49,15 @@ function install(req, request) {
                 },
             });
         },
-        getDrawResult(lotteryId, count) {
+        getDrawResult(lotteryId, count, orderId) {
             const url = `${req.apiUrl}/api/v1/wx/getDrawResult`;
             return request({
                 url,
                 method: 'GET',
                 data: {
                     lotteryId,
-                    count
+                    count,
+                    orderId
                 },
                 fail: function (err) {
                     console.error(err);
