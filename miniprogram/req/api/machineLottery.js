@@ -7,7 +7,14 @@ function install(req, request) {
                 method: 'GET',
                 data: {
                     machineId
-                }
+                },
+                fail: function (err) {
+                    console.error(err);
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
+                },
             });
         },
         getMachineLotteryDetail(param) {
@@ -15,7 +22,14 @@ function install(req, request) {
             return request({
                 url,
                 method: 'GET',
-                data: param
+                data: param,
+                fail: function (err) {
+                    console.error(err);
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
+                },
             });
         },
         getCardRemain(lotteryId) {
@@ -25,7 +39,14 @@ function install(req, request) {
                 method: 'GET',
                 data: {
                     lotteryId
-                }
+                },
+                fail: function (err) {
+                    console.error(err);
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
+                },
             });
         },
         getDrawResult(lotteryId, count) {
@@ -36,9 +57,120 @@ function install(req, request) {
                 data: {
                     lotteryId,
                     count
-                }
+                },
+                fail: function (err) {
+                    console.error(err);
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
+                },
             });
         },
+        moneyBagPay(lotteryId, num) {
+            const url = `${req.apiUrl}/api/v1/wx/moneyBagPay`;
+            return request({
+                url,
+                method: 'PUT',
+                data: {
+                    lotteryId,
+                    num,
+                },
+                fail: function (err) {
+                    console.error(err);
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
+                },
+            });
+        },
+        wechatPay(lotteryId, num) {
+            const url = `${req.apiUrl}/api/v1/wx/wechatPay`;
+            return request({
+                url,
+                method: 'PUT',
+                data: {
+                    lotteryId,
+                    num
+                },
+                fail: function (err) {
+                    console.error(err);
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
+                },
+            });
+        },
+        getQueue(lotteryId) {
+            const url = `${req.apiUrl}/api/v1/wx/getQueue`;
+            return request({
+                url,
+                method: 'GET',
+                data: {
+                    lotteryId
+                },
+                fail: function (err) {
+                    console.error(err);
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
+                },
+            });
+        },
+        addQueue(lotteryId) {
+            const url = `${req.apiUrl}/api/v1/wx/addQueue`;
+            return request({
+                url,
+                method: 'PUT',
+                data: {
+                    lotteryId
+                },
+                fail: function (err) {
+                    console.error(err);
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
+                },
+            });
+        },
+        quitQueue(lotteryId) {
+            const url = `${req.apiUrl}/api/v1/wx/quitQueue`;
+            return request({
+                url,
+                method: 'PUT',
+                data: {
+                    lotteryId
+                },
+                fail: function (err) {
+                    console.error(err);
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
+                },
+            });
+        },
+        updateQueuePayStep(lotteryId) {
+            const url = `${req.apiUrl}/api/v1/wx/updateQueuePayStep`;
+            return request({
+                url,
+                method: 'PUT',
+                data: {
+                    lotteryId
+                },
+                fail: function (err) {
+                    console.error(err);
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
+                },
+            });
+        }
     };
 }
 

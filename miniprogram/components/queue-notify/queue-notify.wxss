@@ -1,18 +1,71 @@
-.nick-name {
-    color: #ffffff;
-    font-weight: bold;
-    background-color: #007fff; 
-}
-
-.border-nick-name {
-    margin: 0 auto;
-    width: 300rpx;
-    border: 2rpx solid #ffffff;
-    border-radius: 8rpx;
-}
-
 .count-down {
     margin-top: 50rpx;
     margin-bottom: 50rpx;
     text-align: center;
+}
+
+.queue-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.queue-modal-wrap {
+    width: 90%;
+    position: relative;
+}
+
+.queue-bg {
+    width: 100%;
+}
+
+.queue-title-wrap {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100rpx;
+    color: #000;
+    font-weight: bold;
+}
+
+.queue-text {
+    font-size: 40rpx;
+}
+
+.queue-subtext {
+    margin-top: 20rpx;
+    font-size: 30rpx;
+}
+
+.queue-btn-wrap {
+    position: absolute;
+    left: 120rpx;
+    right: 120rpx;
+    top: 300rpx;
+    color: #000;
+}
+
+.queue-btn {
+    color: #fff;
+    font-weight: bold;
+    font-size: 30rpx;
+    background-color: #007fff;
+    margin: 0 auto;
+    width: 200rpx;
+    border: 2rpx solid #fff;
+    border-radius: 8rpx;
+}
+
+.queue-info {
+    margin: 20rpx 0 0 0;
+    text-align: justify;
+    font-size: 20rpx;
 }

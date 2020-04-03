@@ -12,6 +12,7 @@ let userInfo = {},
 
 Page({
     data: {
+        lotteryId: "",
         topImg: "",
         lotteryOrder: 0,
         lotteryLength: 0,
@@ -80,6 +81,7 @@ Page({
                     });
 
                     that.setData({
+                        lotteryId: lotteryId,
                         cardRemain: lotteryInfo.cardRemain,
                         cardTotal: lotteryInfo.cardTotal,
                         topImg: lotteryInfo.topImg,
@@ -197,53 +199,83 @@ Page({
         });
     },
     onGetUserInfo: function(event) {
-        if (isLoggedIn) {
-            if (openStatus) {
-                this.data.cardRemain < parseInt(event.currentTarget.dataset.count) ? wx.showToast({
-                    title: "余量不足",
-                    icon: "none"
-                }) : this.showPayModal(parseInt(event.currentTarget.dataset.count));
-            } else {
-                wx.showToast({
-                    title: "此套即将开售，请耐心等待",
-                    icon: "none"
-                });
-            }
-        } else {
-            userInfo = event.detail.userInfo
-            let that = this;
-            if (userInfo) {
-                req.user.updateUserInfo(userInfo)
-                    .then((res) => {
-                        console.log(res);
-                        if (res.code === 0) {
-                            wx.setStorageSync('userInfo', userInfo);
-                            isLoggedIn = true;
+        let that = this;
 
-                            if (openStatus) {
-                                that.showPayModal(parseInt(event.currentTarget.dataset.count))
-                            } else {
-                                wx.showToast({
-                                    title: "此套即将开售，请耐心等待",
-                                    icon: "none"
-                                });
-                            }
+        // 更新队列状态
+        req.machineLottery.updateQueuePayStep(lotteryId)
+            .then((res) => {
+                console.log(res);
+               
+                if (res.code === 0) {
+                    if (isLoggedIn) {
+                        if (openStatus) {
+                            that.data.cardRemain < parseInt(event.currentTarget.dataset.count) ? wx.showToast({
+                                title: "余量不足",
+                                icon: "none"
+                            }) : that.showPayModal(parseInt(event.currentTarget.dataset.count));
                         } else {
                             wx.showToast({
-                                title: "出错啦！请联系客服",
+                                title: "此套即将开售，请耐心等待",
                                 icon: "none"
                             });
                         }
-                    })
-                    .catch((err) => {
-                        console.error(err);
-                        wx.showToast({
-                            title: "出错啦！请联系客服",
-                            icon: "none"
-                        });
+                    } else {
+                        userInfo = event.detail.userInfo
+                        if (userInfo) {
+                            req.user.updateUserInfo(userInfo)
+                                .then((res) => {
+                                    console.log(res);
+                                    if (res.code === 0) {
+                                        wx.setStorageSync('userInfo', userInfo);
+                                        isLoggedIn = true;
+
+                                        if (openStatus) {
+                                            that.showPayModal(parseInt(event.currentTarget.dataset.count))
+                                        } else {
+                                            wx.showToast({
+                                                title: "此套即将开售，请耐心等待",
+                                                icon: "none"
+                                            });
+                                        }
+                                    } else {
+                                        wx.showToast({
+                                            title: "出错啦！请联系客服",
+                                            icon: "none"
+                                        });
+                                    }
+                                })
+                                .catch((err) => {
+                                    console.error(err);
+                                    wx.showToast({
+                                        title: "出错啦！请联系客服",
+                                        icon: "none"
+                                    });
+                                });
+                        }
+                    }
+                } else if (res.code === -10) {
+                    that.setData({
+                        dialogShow: true,
+                        dialogTitle: "通知",
+                        dialogContent: "操作时间超时，请重新选择一番赏",
+                        dialogButton: [{
+                            text: '确定'
+                        }]
                     });
-            }
-        }
+                } else {
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+                wx.showToast({
+                    title: "出错啦！请联系客服",
+                    icon: "none"
+                });
+            });
     },
     showPayModal: function(buyNum) {
         let that = this;
@@ -295,11 +327,21 @@ Page({
             });
         } else {
             this.checkCount(function() {
-                req.user.moneyBagPay(lotteryId, cardPayCount)
+                req.machineLottery.moneyBagPay(lotteryId, cardPayCount)
                     .then((res) => {
                         console.log(res);
                         if (res.code === 0) {
                             that.callDraw(cardPayCount);
+                        } else if (res.code === -10) {
+                            wx.hideLoading();
+                            this.setData({
+                                dialogShow: true,
+                                dialogTitle: "通知",
+                                dialogContent: "操作时间超时，请重新选择一番赏",
+                                dialogButton: [{
+                                    text: '确定'
+                                }]
+                            });
                         } else {
                             wx.showToast({
                                 title: "出错啦！请联系客服",
@@ -324,7 +366,7 @@ Page({
         });
         let cardPayCount = this.data.cardPayCount;
         this.checkCount(function() {
-            req.user.wechatPay(lotteryId, cardPayCount)
+            req.machineLottery.wechatPay(lotteryId, cardPayCount)
                 .then((res) => {
                     console.log(res);
                     if (res.code === 0) {
@@ -346,6 +388,16 @@ Page({
                                     icon: "none"
                                 });
                             }
+                        });
+                    } else if (res.code === -10) {
+                        wx.hideLoading();
+                        this.setData({
+                            dialogShow: true,
+                            dialogTitle: "通知",
+                            dialogContent: "操作时间超时，请重新选择一番赏",
+                            dialogButton: [{
+                                text: '确定'
+                            }]
                         });
                     } else {
                         wx.showToast({
@@ -460,7 +512,11 @@ Page({
         });
     },
     lotteryClose: function() {
-        this.refreshData();
+        //this.refreshData();
+        // TODO 单次抽奖结束后，退出队列
+        wx.switchTab({
+            url: "/pages/index/index"
+        });
     },
     showBuyInfo: function() {
         this.setData({
@@ -476,5 +532,10 @@ Page({
         wx.switchTab({
             url: "/pages/bag/bag"
         });
-    }
+    },
+    tapDialogButton() {
+        wx.switchTab({
+            url: "/pages/index/index"
+        });
+    },
 });

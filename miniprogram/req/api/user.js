@@ -7,7 +7,14 @@ function install(req, request) {
                 method: 'GET',
                 data: {
                     userId
-                }
+                },
+                fail: function (err) {
+                    console.error(err);
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
+                },
             });
         },
         updateUserInfo(userInfo) {
@@ -17,29 +24,14 @@ function install(req, request) {
                 method: 'PUT',
                 data: {
                     userInfo
-                }
-            });
-        },
-        moneyBagPay(lotteryId, num) {
-            const url = `${req.apiUrl}/api/v1/wx/moneyBagPay`;
-            return request({
-                url,
-                method: 'PUT',
-                data: {
-                    lotteryId,
-                    num,
-                }
-            });
-        },
-        wechatPay(lotteryId, num) {
-            const url = `${req.apiUrl}/api/v1/wx/wechatPay`;
-            return request({
-                url,
-                method: 'PUT',
-                data: {
-                    lotteryId,
-                    num
-                }
+                },
+                fail: function (err) {
+                    console.error(err);
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
+                },
             });
         },
     };

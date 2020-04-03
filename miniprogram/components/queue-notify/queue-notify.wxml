@@ -1,3 +1,16 @@
-<button ontap="startCount" class="nick-name border-nick-name">开始倒计时</button>
-<view class="count-down">倒计时: {{timeout}}</view>
-<button ontap="stopCount" class="nick-name border-nick-name">结束倒计时</button>
+<view class="queue-modal" wx:if="{{showQueueModal}}">
+    <view class="queue-modal-wrap">
+        <image class="queue-bg" mode="widthFix" src="/icon/pay_bg.png"></image>
+        <view class="queue-title-wrap">
+            <view class="queue-text">排队人数：{{queueCount}}</view>
+            <view class="queue-subtext">预计时间：{{queueTime}}分钟</view>
+        </view>
+        <view class="queue-btn-wrap">
+            <button ontap="startQueue" class="queue-btn" wx:if="{{!inQueue}}">排队</button>
+            <button ontap="cancelQueue" class="queue-btn" wx:if="{{inQueue}}">取消排队</button>
+            <view class="queue-info">
+                <view>(售货机当前正被使用中，如需使用请点击排队按钮进行排队)</view>
+            </view>
+        </view>
+    </view>
+</view>
