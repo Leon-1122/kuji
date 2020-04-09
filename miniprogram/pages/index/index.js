@@ -15,6 +15,17 @@ Page({
         wx.setStorageSync("machineId", machineId);
     },
     onShow: function() {
+        req.user.reportVisit(machineId)
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((err) => {
+                console.error(err);
+                wx.showToast({
+                    title: "出错啦！请联系客服",
+                    icon: "none"
+                });
+            });
         this.getData();
     },
     onPullDownRefresh: function() {

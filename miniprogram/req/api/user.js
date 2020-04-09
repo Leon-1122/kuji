@@ -34,6 +34,23 @@ function install(req, request) {
                 },
             });
         },
+        reportVisit(machineId) {
+            const url = `${req.apiUrl}/api/v1/wx/reportVisit`;
+            return request({
+                url,
+                method: 'PUT',
+                data: {
+                    machineId
+                },
+                fail: function (err) {
+                    console.error(err);
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
+                },
+            });
+        },
     };
 }
 
