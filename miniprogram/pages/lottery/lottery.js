@@ -394,7 +394,7 @@ Page({
                         });
                     } else if (res.code === -10) {
                         wx.hideLoading();
-                        this.setData({
+                        that.setData({
                             dialogShow: true,
                             dialogTitle: "通知",
                             dialogContent: "操作时间超时，请重新选择一番赏",
