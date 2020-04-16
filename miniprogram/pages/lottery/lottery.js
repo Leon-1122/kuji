@@ -109,12 +109,12 @@ Page({
             });
     },
     onPullDownRefresh: function() {
-        this.refreshData(wx.stopPullDownRefresh());
+        this.refreshData(wx.stopPullDownRefresh);
     },
     tapRefresh: function() {
         wx.showLoading({
             title: "加载中"
-        }), this.refreshData(wx.hideLoading());
+        }), this.refreshData(wx.hideLoading);
     },
     refreshData: function(callback) {
         this.getData(lotteryId, callback);
@@ -166,7 +166,7 @@ Page({
             }
         }
 
-        this.getData(newLotteryId, wx.hideLoading());
+        this.getData(newLotteryId, wx.hideLoading);
     },
     onTabChange: function(event) {
         this.setData({

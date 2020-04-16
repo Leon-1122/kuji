@@ -5,10 +5,9 @@ const machineLotteryApi = require('./api/machineLottery.js');
 
 const apiUrlTable = {
     local: 'http://localhost:1337',
-    pre: 'https://stg-mp-req.leanapp.cn',
-    release: 'https://mp-req.leanapp.cn',
+    release: 'https://sh.lucksung.com',
 };
-const apiUrl = apiUrlTable.local;
+const apiUrl = apiUrlTable.release;
 const sessionHeaderKey = 'userid';
 
 /**

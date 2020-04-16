@@ -1,3 +1,5 @@
+// 项目地址https://github.com/wxlite-plus/mp-req
+
 const req = require('./prototype.js');
 // fn
 const errFn = require('./fn/err.js');

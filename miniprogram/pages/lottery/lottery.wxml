@@ -42,7 +42,7 @@
                 <view>剩余/总数</view>
             </view>
             <view class="record-line" wx:for="{{remainShow}}" wx:key="_unique">
-                <view>{{item.level}}赏：</view>
+                <view>{{item.level}}：</view>
                 <view>{{item.remain}}/{{item.total||0}}</view>
             </view>
         </view>
