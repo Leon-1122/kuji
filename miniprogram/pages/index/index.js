@@ -15,44 +15,48 @@ Page({
         wx.setStorageSync("machineId", machineId);
     },
     onShow: function() {
-        req.user.reportVisit(machineId)
-            .then((res) => {
-                console.log(res);
-            })
-            .catch((err) => {
-                console.error(err);
-                wx.showToast({
-                    title: "出错啦！请联系客服",
-                    icon: "none"
+        if (machineId) {
+            req.user.reportVisit(machineId)
+                .then((res) => {
+                    console.log(res);
+                })
+                .catch((err) => {
+                    console.error(err);
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
                 });
-            });
+        }
         this.getData();
     },
     onPullDownRefresh: function() {
         this.getData(wx.stopPullDownRefresh);
     },
     getData: function(callback) {
-        let that = this;
-        req.machineLottery.getMachineLotteryList(machineId)
-            .then((res) => {
-                console.log(res);
-                if (res.data.lotteryList) {
-                    that.setData({
-                        lotteryList: res.data.lotteryList
-                    });
-                }
+        if (machineId) {
+            let that = this;
+            req.machineLottery.getMachineLotteryList(machineId)
+                .then((res) => {
+                    console.log(res);
+                    if (res.data.lotteryList) {
+                        that.setData({
+                            lotteryList: res.data.lotteryList
+                        });
+                    }
 
-                if (callback) {
-                    callback();
-                }
-            })
-            .catch((err) => {
-                console.error(err);
-                wx.showToast({
-                    title: "出错啦！请联系客服",
-                    icon: "none"
+                    if (callback) {
+                        callback();
+                    }
+                })
+                .catch((err) => {
+                    console.error(err);
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
                 });
-            });
+        }
     },
     onBannerImgTap: function(event) {
         var data = event.currentTarget.dataset;
