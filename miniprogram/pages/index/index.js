@@ -1,47 +1,80 @@
 getApp();
 
-var machineCode = '', t = wx.cloud.database();
+const req = require('../../req/index.js');
+let machineId = '';
 
 Page({
     data: {
-        project: []
+        lotteryList: []
     },
-    onLoad: function(t) {
-        console.log(t), t.machineCode && (machineCode = t.machineCode);
-        wx.setStorageSync("machineCode", machineCode);
+    onLoad: function(param) {
+        console.log(param);
+        if (param.machineId) {
+            machineId = param.machineId;
+        }
+        wx.setStorageSync("machineId", machineId);
     },
     onShow: function() {
+        if (machineId) {
+            req.user.reportVisit(machineId)
+                .then((res) => {
+                    console.log(res);
+                })
+                .catch((err) => {
+                    console.error(err);
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
+                });
+        }
         this.getData();
     },
     onPullDownRefresh: function() {
         this.getData(wx.stopPullDownRefresh);
     },
-    getData: function(e) {
-        var n = this;
-        t.collection("project").where({
-            machineCode: machineCode
-        }).orderBy("order", "desc").get().then(function(t) {
-            console.log(t.data);
-            n.setData({
-                project: t.data
-            }, e && e());
-        }).catch(function(t) {
-            console.error(t);
-        });
+    getData: function(callback) {
+        if (machineId) {
+            let that = this;
+            req.machineLottery.getMachineLotteryList(machineId)
+                .then((res) => {
+                    console.log(res);
+                    if (res.data.lotteryList) {
+                        that.setData({
+                            lotteryList: res.data.lotteryList
+                        });
+                    }
+
+                    if (callback) {
+                        callback();
+                    }
+                })
+                .catch((err) => {
+                    console.error(err);
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
+                });
+        }
     },
-    onBannerImgTap: function(t) {
-        var e = t.currentTarget.dataset, n = e.pjid, o = e.pjname;
-        e.cantap ? wx.navigateTo({
-            url: "/pages/lottery/lottery?pjid=".concat(n, "&pjname=").concat(o)
-        }) : wx.showToast({
-            title: "已售罄",
-            icon: "none"
-        });
+    onBannerImgTap: function(event) {
+        var data = event.currentTarget.dataset;
+        if (data.cantap) {
+            wx.navigateTo({
+                url: "/pages/lottery/lottery?mlid=".concat(data.mlid, "&mlname=", data.mlname)
+            })
+        } else {
+            wx.showToast({
+                title: "已售罄",
+                icon: "none"
+            });
+        }
     },
     onShareAppMessage: function() {
         return {
             title: "快来购买一番赏吧！",
-            path: "/pages/index/index"
+            path: "/pages/index/index?machineId".concat(machineId)
         };
     }
 });

@@ -1,5 +1,8 @@
 {
-    "usingComponents": {},
+    "usingComponents": {
+        "queue-notify": "/components/queue-notify/queue-notify",
+        "dialog": "/components/dialog/dialog"
+    },
     "navigationBarTitleText": "一番赏",
     "enablePullDownRefresh": true
 }

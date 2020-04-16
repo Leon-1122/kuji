@@ -1,4 +1,8 @@
 <view class="container">
+    <queue-notify lottery-id="{{lotteryId}}"></queue-notify>
+    <dialog title="{{dialogTitle}}" show="{{dialogShow}}" bindbuttontap="tapDialogButton" mask-closable="{{false}}" buttons="{{dialogButton}}" ext-class="">
+        <view>{{dialogContent}}</view>
+    </dialog>
     <view class="main-wrap">
         <image class="window-bg" mode="widthFix" src="/icon/window_bg.png"></image>
         <image class="top-img" mode="widthFix" src="{{topImg}}"></image>
@@ -7,8 +11,8 @@
         <image bind:tap="onSwiperRight" class="icon-right" mode="widthFix" src="/icon/icon_right.png"></image>
         <image bind:tap="onSwiperRight" class="icon-change" mode="widthFix" src="/icon/icon_change.png"></image>
         <view class="project-count">
-            <view>当前：第 <text>{{projectOrder}}</text> 套</view>
-            <view>总套数：<text>{{projectLength}}</text> 套</view>
+            <view>当前：第 <text>{{lotteryOrder}}</text> 套</view>
+            <view>总套数：<text>{{lotteryLength}}</text> 套</view>
         </view>
     </view>
     <view class="card-wrap">
@@ -38,7 +42,7 @@
                 <view>剩余/总数</view>
             </view>
             <view class="record-line" wx:for="{{remainShow}}" wx:key="_unique">
-                <view>{{item.level}}赏：</view>
+                <view>{{item.level}}：</view>
                 <view>{{item.remain}}/{{item.total||0}}</view>
             </view>
         </view>
@@ -101,7 +105,7 @@
         <view class="step-two" wx:else>
             <view class="step-title">恭喜获得</view>
             <view class="draw-product-img-wrap">
-                <view class="product-img-wrap" wx:for="{{productDrawed}}" wx:key="index">
+                <view class="product-img-wrap" wx:for="{{productDrawn}}" wx:key="index">
                     <image bind:tap="previewDrawProduct" class="product-img" data-url="{{item.productImg}}" mode="widthFix" src="{{item.productImg}}"></image>
                     <view class="product-name">{{item.name}}</view>
                 </view>

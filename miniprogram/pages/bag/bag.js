@@ -1,53 +1,69 @@
-getApp(), wx.cloud.database().collection("user");
+getApp();
 
-var t = "", e = {}, o = "", a = 0;
+const req = require('../../req/index.js');
+let userId = '';
 
 Page({
     data: {
-        empty: !1,
+        empty: true,
         bagList: []
     },
     onShow: function() {
+        userId = wx.getStorageSync('mp-req-session-id');
         this.getData();
     },
-    onHide: function() {
-    },
+    onHide: function() {},
     onPullDownRefresh: function() {
         this.getData(function() {
             wx.stopPullDownRefresh();
         });
     },
-    getData: function(a) {
-        var c = this;
-        wx.cloud.callFunction({
-            name: "getUser"
-        }).then(function(s) {
-            if (s.result.data.length > 0) {
-                var n = s.result.data[0].bagList;
-                n && 0 !== n.length ? s.result.data[0].addressObject && s.result.data[0].addressObject.provinceName ? (t = s.result.data[0].address, 
-                e = s.result.data[0].addressObject, o = s.result.data[0].addressObject.provinceName, 
-                c.setData({
-                    bagList: n,
-                    empty: !1
-                }, a && a())) : (o = !1, c.setData({
-                    bagList: n,
-                    empty: !1
-                }, a && a())) : c.setData({
-                    empty: !0
-                }, a && a());
-            } else c.setData({
-                empty: !0
-            }, a && a());
+    getData: function(callback) {
+        var that = this;
+
+        if (userId) {
+            req.user.getUserInfo(userId)
+                .then((res) => {
+                    console.log(res);
+                    if (res.data.userInfo) {
+                        let bagList = res.data.userInfo.bagList;
+                        if (bagList && bagList.length > 0) {
+                            that.setData({
+                                bagList: bagList,
+                                empty: false
+                            });
+                        } else {
+                            that.setData({
+                                empty: true
+                            });
+                        }
+                    } else {
+                        that.setData({
+                            empty: true
+                        });
+                    }
+
+                    if (callback) {
+                        callback();
+                    }
+                })
+                .catch((err) => {
+                    console.error(err);
+                    wx.showToast({
+                        title: "出错啦！请联系客服",
+                        icon: "none"
+                    });
+                });
+        }
+    },
+    previewProduct: function(event) {
+        var bagList = this.data.bagList,
+            urls = [];
+        bagList.map(function(currentValue) {
+            urls.push(currentValue.productImg);
+        }), wx.previewImage({
+            current: event.currentTarget.dataset.url,
+            urls: urls
         });
     },
-    previewProduct: function(t) {
-        console.log(t);
-        var e = this.data.bagList, o = [];
-        e.map(function(t) {
-            o.push(t.productImg);
-        }), wx.previewImage({
-            current: t.currentTarget.dataset.url,
-            urls: o
-        });
-    }
 });

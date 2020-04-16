@@ -1,11 +1,11 @@
 <view class="container">
-    <view class="main-wrapper" wx:for="{{project}}" wx:key="_id">
+    <view class="main-wrapper" wx:for="{{lotteryList}}" wx:key="id">
         <view class="info-wrap">
             <text class="time-title">第{{item.timeTitle}}期</text>
             <text class="name">{{item.name}}</text>
-            <text class="sold-out" wx:if="{{item.soldOut}}">（售罄）</text>
-            <text class="coming-soon" wx:if="{{item.comingSoon}}">（即将开售）</text>
+            <text class="coming-soon" wx:if="{{item.status === 1}}">（即将开售）</text>
+            <text class="sold-out" wx:if="{{item.status == 3}}">（售罄）</text>
         </view>
-        <image bind:tap="onBannerImgTap" data-cantap="{{item.canTap}}" data-pjid="{{item._id}}" data-pjname="{{item.name}}" mode="widthFix" src="{{item.bannerImg}}"></image>
+        <image bind:tap="onBannerImgTap" data-cantap="{{item.status !== 3}}" data-mlid="{{item.id}}" data-mlname="{{item.name}}" mode="widthFix" src="{{item.bannerImg}}"></image>
     </view>
 </view>
